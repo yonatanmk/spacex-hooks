@@ -1,25 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import List from './layouts/List'
+import Launch from './layouts/Launch'
 
-function App() {
+export const LaunchContext = React.createContext();
+
+const App = () => {
+  const [launches, setLaunches] = useState([])
+
+  useEffect(() => {
+    fetch('https://api.spacexdata.com/v3/launches')
+      .then((response) => {
+        return response.json();
+      })
+      // .then(response => console.log(response))
+      .then(response => setLaunches(response))
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <LaunchContext.Provider value={launches}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact component={List} />
+          <Route path="/launches/:id" exact component={Launch} />
+        </Switch>
+      </BrowserRouter>
+    </LaunchContext.Provider>
   );
 }
 
